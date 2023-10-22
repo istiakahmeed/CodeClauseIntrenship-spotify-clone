@@ -1,9 +1,10 @@
 import Sidebar from "@/components/Sidebar";
-import "./globals.css";
-import { Inter } from "next/font/google";
-import SupabaseProviders from "@/providers/SupabaseProviders";
-import UseProvider from "@/providers/UseProvider";
 import ModalProvider from "@/providers/ModalProvider";
+import SupabaseProviders from "@/providers/SupabaseProviders";
+import ToasterProvider from "@/providers/Toasterprovider";
+import UseProvider from "@/providers/UseProvider";
+import { Inter } from "next/font/google";
+import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,11 +21,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
+        <ToasterProvider />
         <SupabaseProviders>
-         <UseProvider>
-          <ModalProvider/>
-         <Sidebar>{children}</Sidebar>
-         </UseProvider>
+          <UseProvider>
+            <ModalProvider />
+            <Sidebar>{children}</Sidebar>
+          </UseProvider>
         </SupabaseProviders>
       </body>
     </html>

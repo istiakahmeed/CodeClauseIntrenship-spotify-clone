@@ -1,14 +1,17 @@
 "use client";
-import { useRouter } from "next/navigation";
-import { twMerge } from "tailwind-merge";
-import React from "react";
-import { RxCaretLeft, RxCaretRight } from "react-icons/rx";
-import { HiHome } from "react-icons/hi";
-import { BiSearch } from "react-icons/bi";
-import Button from "./Button";
 import useAuthModal from "@/hooks/useAuthModal";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { useUser } from "@/hooks/useUser";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { useRouter } from "next/navigation";
+import React from "react";
+import { toast } from "react-hot-toast";
+import { BiSearch } from "react-icons/bi";
+import { FaUserAlt } from "react-icons/fa";
+import { HiHome } from "react-icons/hi";
+import { RxCaretLeft, RxCaretRight } from "react-icons/rx";
+import { twMerge } from "tailwind-merge";
+import Button from "./Button";
+
 interface HeaderProps {
   children: React.ReactNode;
   className?: string;
@@ -16,16 +19,18 @@ interface HeaderProps {
 const Header = ({ children, className }: HeaderProps) => {
   const router = useRouter();
   const authModal = useAuthModal();
-  
-  const supabaseClient = useSupabaseClient()
-  const {user}= useUser()
-  const handleLogout = async() => {
-    const { error} = await supabaseClient.auth.signOut()
 
-    router.refresh()
+  const supabaseClient = useSupabaseClient();
+  const { user } = useUser();
+  const handleLogout = async () => {
+    const { error } = await supabaseClient.auth.signOut();
+
+    router.refresh();
 
     if (error) {
-      console.log(error)
+      toast.error(error.message);
+    } else {
+      toast.success("Logged out");
     }
   };
   return (
@@ -57,7 +62,7 @@ const Header = ({ children, className }: HeaderProps) => {
           "
         >
           <button
-          onClick={()=> router.back()}
+            onClick={() => router.back()}
             className="rounded-full bg-black
             flex
             items-center
@@ -69,7 +74,7 @@ const Header = ({ children, className }: HeaderProps) => {
             <RxCaretLeft size={35} className="text-white" />
           </button>
           <button
-            onClick={()=> router.forward()}
+            onClick={() => router.forward()}
             className="rounded-full bg-black
             flex
             items-center
@@ -83,7 +88,7 @@ const Header = ({ children, className }: HeaderProps) => {
         </div>
         <div className="flex md:hidden gap-x-2 items-center">
           <button
-          className="
+            className="
            rounded-full
            p-2
            bg-white
@@ -94,10 +99,10 @@ const Header = ({ children, className }: HeaderProps) => {
            transition
           "
           >
-            <HiHome size={20} className="text-black"/>
+            <HiHome size={20} className="text-black" />
           </button>
           <button
-          className="
+            className="
            rounded-full
            p-2
            bg-white
@@ -108,39 +113,57 @@ const Header = ({ children, className }: HeaderProps) => {
            transition
           "
           >
-            <BiSearch size={20} className="text-black"/>
+            <BiSearch size={20} className="text-black" />
           </button>
         </div>
-        <div className="
+        <div
+          className="
          flex
          justify-between
          items-center
          gap-x-4
-        ">
+        "
+        >
+          {user ? (
+            <div className="flex gap-x-4 items-center">
+              <Button onClick={handleLogout} className="bg-white px-6 py-2">
+                Logout
+              </Button>
+              <Button
+                onClick={() => router.push("/account")}
+                className="bg-white"
+              >
+                <FaUserAlt />
+              </Button>
+            </div>
+          ) : (
             <>
               <div>
-               <Button
-               onClick={authModal.onOpen}
-               className="
+                <Button
+                  onClick={authModal.onOpen}
+                  className="
                 bg-transparent
                 text-neutral-300
                 font-medium
-               ">
-                Sing Up
-               </Button>
+               "
+                >
+                  Sing Up
+                </Button>
               </div>
               <div>
-               <Button 
-               onClick={authModal.onOpen}
-               className="
+                <Button
+                  onClick={authModal.onOpen}
+                  className="
                bg-white
                px-6
                py-2
-               ">
-               Log in
-               </Button>
+               "
+                >
+                  Log in
+                </Button>
               </div>
             </>
+          )}
         </div>
       </div>
       {children}
