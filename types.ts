@@ -1,6 +1,7 @@
 import Stripe from "stripe";
 
 export interface Song {
+  map(arg0: (song: any) => any): string[];
   id: string;
   user_id: string;
   author: string;
